@@ -1,0 +1,33 @@
+#!/bin/bash
+
+yum update -y
+
+amazon-linux-extras install php7.2
+
+yum install httpd -y
+
+cd /var/www/html
+
+echo "healthy" > healthy.html
+
+wget https://wordpress.org/wordpress-5.3-RC1.zip
+
+unzip wordpress-5.3-RC1.zip
+
+cp -r wordpress/* /var/www/html/
+
+rm -rf wordpress
+
+rm wordpress-5.3-RC1.zip
+
+chmod -R 755 wp-content
+
+chown -R apache:apache wp-content
+
+wget --retry-connrefused --waitretry=1 --read-timeout=20 --timeout=15 -t 10 https://s3.amazonaws.com/bucketforwordpresslab-donotdelete/htaccess.txt
+
+mv htaccess.txt .htaccess
+
+chkconfig httpd on
+
+service httpd start
